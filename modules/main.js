@@ -6,14 +6,13 @@ import { rgba } from "/modules/color.js"
 import { MouseHandler } from "/modules/mouseHandler.js"
 
 document.body.style = 'width: 100%;'
-+ 'height: 100%;'
-+ 'color: black;'
-+ 'color: red;'
-+ 'margin-right: 0px;'
-+ 'margin-top: 0px;'
-+ 'background-color: black;'
-+ 'overflow-x: hidden;'
-+ 'overflow-y: hidden;'
+    + 'height: 100%;'
+    + 'color: black;'
+    + 'background-color: black;'
+    + 'margin-right: 0px;'
+    + 'margin-top: 0px;'
+    + 'overflow-x: hidden;'
+    + 'overflow-y: hidden;'
 
 var [width, height] = getSize()
 
@@ -39,9 +38,8 @@ var grdAnimator = createGrdAnimator(
 )
 animatorLinear(10, 1000, grdAnimator)
 
-const handler = new MouseHandler(mouseCanvas, centerX, centerY, 100);
+const handler = new MouseHandler(mouseCanvas, centerX, centerY, 20);
 
-handler.start(10, 1000)
 document.body.onpointermove = event => {
     const { clientX, clientY } = event;
     handler.reload(clientX, clientY);

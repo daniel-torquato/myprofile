@@ -2,14 +2,17 @@ import {addCircleWithContext, addContext} from "/modules/elements.js";
 import {rgba} from "/modules/color.js";
 
 export class MouseHandler {
+
     constructor(canvas, x, y, radius, lineWidth = 10) {
         this.canvas = canvas;
+        this.animStep = 16;
+        this.animPeriod = 400;
         this.x = x;
         this.oldX = x;
         this.oldY = y;
         this.y = y;
-        this.maxRadius = radius;
-        this.radius = 0;
+        this.radius = radius;
+        this.animFactor = 0;
         this.lineWidth = lineWidth;
         this.ctx = canvas.getContext("2d");
         this.canvas.addEventListener('pointerleave', (_) => {
@@ -17,14 +20,15 @@ export class MouseHandler {
             this.clean()
            // this.animId = -1;
         })
+        this.start()
     }
 
     clean() {
         this.ctx.clearRect(
-            this.oldX - this.maxRadius - this.lineWidth,
-            this.oldY - this.maxRadius - this.lineWidth,
-            2 * (this.maxRadius + this.lineWidth),
-            2 * (this.maxRadius + this.lineWidth)
+            this.oldX - this.radius - this.lineWidth,
+            this.oldY - this.radius - this.lineWidth,
+            2 * (this.radius + this.lineWidth),
+            2 * (this.radius + this.lineWidth)
         )
     }
 
@@ -32,16 +36,17 @@ export class MouseHandler {
         clearInterval(this.animId);
     }
 
-    start(stepMS, periodMS) {
+    start() {
         this.animTime = 0;
         this.animId = setInterval(() => {
-            if (this.animTime === periodMS) {
+            if (this.animTime > this.animPeriod) {
                 this.animTime = 0;
+            } else {
+                this.animTime += this.animStep;
             }
-            this.radius = this.maxRadius * (this.animTime / periodMS);
+            this.animFactor = this.animTime / this.animPeriod;
             this.draw()
-            this.animTime += stepMS;
-        }, stepMS)
+        }, this.animStep);
     }
 
     draw() {
@@ -49,9 +54,9 @@ export class MouseHandler {
         addCircleWithContext(
             this.ctx,
             this.x, this.y,
-            this.radius,
-            rgba(1, 0, 0, 1),
-            this.lineWidth
+            this.radius * this.animFactor,
+            rgba(1 - this.animFactor, 0, 1 - this.animFactor, 0.8),
+            this.lineWidth * (1 - this.animFactor),
         )
         this.oldX = this.x;
         this.oldY = this.y;
@@ -59,9 +64,6 @@ export class MouseHandler {
 
 
     reload(newX, newY) {
-        if (this.animTime === -1) {
-           // this.start(10, 1000)
-        }
         this.x = newX
         this.y = newY
     }
