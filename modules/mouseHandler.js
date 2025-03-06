@@ -16,9 +16,13 @@ export class MouseHandler {
         this.lineWidth = lineWidth;
         this.ctx = canvas.getContext("2d");
         this.canvas.addEventListener('pointerleave', (_) => {
-            //this.stop()
+            this.stop()
             this.clean()
-           // this.animId = -1;
+            this.animId = -1;
+        })
+        this.canvas.addEventListener('pointerenter', (_) => {
+            if (this.animId < 0)
+                this.start()
         })
         this.start()
     }
@@ -45,21 +49,33 @@ export class MouseHandler {
                 this.animTime += this.animStep;
             }
             this.animFactor = this.animTime / this.animPeriod;
-            this.draw()
+            this.#draw()
         }, this.animStep);
     }
 
-    draw() {
+    #draw() {
         this.clean()
-        addCircleWithContext(
-            this.ctx,
-            this.x, this.y,
+        this.#drawPointer(
+            this.x,
+            this.y,
             this.radius * this.animFactor,
             rgba(1 - this.animFactor, 0, 1 - this.animFactor, 0.8),
             this.lineWidth * (1 - this.animFactor),
         )
         this.oldX = this.x;
         this.oldY = this.y;
+    }
+
+    #drawPointer(
+        x, y, radius, color, lineWidth,
+    ) {
+        addCircleWithContext(
+            this.ctx,
+            x, y,
+            radius,
+            color,
+            lineWidth,
+        )
     }
 
 
